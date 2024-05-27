@@ -32,7 +32,7 @@ class _HomescreenState extends State<Homescreen> {
             // final color = user.gender == 'male' ? Colors.blue : Colors.red;
             return ListTile(
               title: Text(user.fullName),
-              subtitle: Text(user.phone),
+              subtitle: Text(user.location.country),
             );
           }),
 
