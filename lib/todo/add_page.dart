@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 class AddTodoPage extends StatefulWidget {
@@ -33,7 +35,7 @@ class _AddTodoPageState extends State<AddTodoPage> {
             maxLines: 8,
           ),
           SizedBox(height: 20,),
-          ElevatedButton(onPressed: (){}, child: Text('Submit'),),
+          ElevatedButton(onPressed: submitData, child: Text('Submit'),),
         ],
       ),
     );
@@ -51,10 +53,33 @@ class _AddTodoPageState extends State<AddTodoPage> {
     //submit data to the server
     final url = 'https://api.nstack.in/v1/todos';
     final uri = Uri.parse(url);
-   final response = await  http.post(uri);
+   final response = await  http.post(uri, body: jsonEncode(body),
+   headers: {
+     'Content-Type': 'application/json'
+   },
+   );
+
     //show success or fail message based on status
+    if(response.statusCode == 201){
+      titleController.text = '';
+      descController.text = '';
+      showSuccessMessage('Creation Success');
+    }else{
+      showErrorMessage('Creation Failed');
+    }
+  }
 
+  void showSuccessMessage(String message){
+    final snackBar = SnackBar(content: Text(message));
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
 
+  void showErrorMessage(String message){
+    final snackBar = SnackBar(content: Text(message,
+    style: TextStyle(color: Colors.white),),
+      backgroundColor: Colors.red,
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 }
 
