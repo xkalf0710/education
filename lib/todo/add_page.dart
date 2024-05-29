@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+
 class AddTodoPage extends StatefulWidget {
   const AddTodoPage({super.key});
 
@@ -63,9 +64,9 @@ class _AddTodoPageState extends State<AddTodoPage> {
     if(response.statusCode == 201){
       titleController.text = '';
       descController.text = '';
-      showSuccessMessage('Creation Success');
+      showSuccessMessage('Амжилттай');
     }else{
-      showErrorMessage('Creation Failed');
+      showErrorMessage('Амжилтгүй алдаа гарлаа');
     }
   }
 
