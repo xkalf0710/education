@@ -30,51 +30,75 @@ List items = [];
       ),
       body: Visibility(
         visible: isLoading,
-        replacement: Center(child: CircularProgressIndicator(),),
+        replacement: Center(child: CircularProgressIndicator(),
+        ),
         child: RefreshIndicator(
           onRefresh: fetchTodo,
+          child: Visibility(
+            visible: items.isNotEmpty,
+            replacement: Center(
+              child: Text('No Todo Item',
+              style: Theme.of(context).textTheme.headlineMedium,),
+            ),
+
           child: ListView.builder(
             itemCount: items.length,
+            padding: EdgeInsets.all(12),
             itemBuilder: (context, index) {
               final item = items[index] as Map;
               final id = item['_id'] as String;
-              return ListTile(
-                leading: CircleAvatar(
-                  child: Text('${index + 1}'),
-                ),
-                title: Text(item['title']),
-                subtitle: Text(item['description']),
-                trailing: PopupMenuButton(
-                  onSelected: (value){
-                    if(value == 'edit') {
-                      // Open Edit Page
-                    }else if(value == 'delete'){
-                      //Delete and refresh
-                      deleteById(id);
-                    }
-                  },
-                  itemBuilder: (context){
-                    return [
-                      PopupMenuItem(child: Text('Засах'),
-                      value: 'edit',),
-                      PopupMenuItem(child: Text('Устгах'),
-                      value: 'delete',),
-                    ];
-                  },
+              return Card(
+                child: ListTile(
+                  leading: CircleAvatar(
+                    child: Text('${index + 1}'),
+                  ),
+                  title: Text(item['title']),
+                  subtitle: Text(item['description']),
+                  trailing: PopupMenuButton(
+                    onSelected: (value){
+                      if(value == 'edit') {
+                        // Open Edit Page
+                        navigateToEditPage(item);
+                      }else if(value == 'delete'){
+                        //Delete and refresh
+                        deleteById(id);
+                      }
+                    },
+                    itemBuilder: (context){
+                      return [
+                        PopupMenuItem(child: Text('Засах'),
+                        value: 'edit',),
+                        PopupMenuItem(child: Text('Устгах'),
+                        value: 'delete',),
+                      ];
+                    },
+                  ),
                 ),
               );
             },),
+        ),
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(onPressed: navigateToAddPage,
           label: Text('Add Todo')),
     );
   }
-  void navigateToAddPage() {
+  Future<void> navigateToAddPage() async {
     final route = MaterialPageRoute(builder: (context) => AddTodoPage());
-    Navigator.push(context, route);
+    await  Navigator.push(context, route);
+    setState(() {
+      isLoading = true;
+    });
+    fetchTodo();
   }
-
+ Future<void> navigateToEditPage(Map item) async {
+    final route = MaterialPageRoute(builder: (context) => AddTodoPage(todo: item));
+    await Navigator.push(context, route);
+    setState(() {
+      isLoading = true;
+    });
+    fetchTodo();
+  }
 
   Future<void> deleteById(String id)async {
     // Delete the item
@@ -126,8 +150,6 @@ List items = [];
         items = result;
       });
     }
-    setState(() {
-      isLoading = false;
-    });
+
   }
 }
